@@ -3,10 +3,7 @@
 
 This software is dual-licensed:
 
-Academic version:
 - Open-source under the GNU GPL v3 for academic and non-commercial use
-
-Industrial version:
 - Commercial license required for proprietary, industrial, or SaaS usage
 
 For commercial licensing, contact: Alar.Aints@gmail.com, Alar.Aints@ut.ee
