@@ -1,9 +1,9 @@
-# F64
 ## License
 
 This software is dual-licensed:
 
 - Open-source under the GNU GPL v3 for academic and non-commercial use
+
 - Commercial license required for proprietary, industrial, or SaaS usage
 
 For commercial licensing, contact: Alar.Aints@gmail.com, Alar.Aints@ut.ee
@@ -12,6 +12,7 @@ For commercial licensing, contact: Alar.Aints@gmail.com, Alar.Aints@ut.ee
 F64 © Alar Aints 2024, 2025, 2026
 a program for filtering sequence reads
 
+Usage:  F64 [command] [options]
 
 Options: 
 
@@ -30,40 +31,45 @@ Options:
     -R 	--tableReport		report index table specifics to stderr
     -j 	--json			print json report of filter data to stdout
     -t  --time			print various time data to stderr
+    -v  --version		print version info
        	--printPositive		print positivley identified reads instead of unrecognized reads
        	--stdin1
        	--stdin2
-	      --stdout1
-	      --stdout2
+	--stdout1
+	--stdout2
 
 Commands:	Options:
 
-    stats	-F -f 
+    help        -v
+		prints CLI Usage Examples
+
+    stats	-F -f -R -t
 		reads filterfiles ( -F and -f ) (no import) and reports the K values and number of indices. 
 
-    merge	-F -f -o -R -j
+    merge	-F -f -o -R -j -t
 		imports binfiles ( -F ) and merges their data. All files must have the same K value. If -f name is provided, output is written in flat hash format. If the -f file exists, the program exits with message: "Flat Files can not be updated or merged". If -o is specified, and exists, a warning is printed : "Outfile is replaced, not updated !". If both -f and -o are provided, -f is written as flat file, and -o is written as binfile. By default, the data are saved in bin format as the first -F file. If the file exists, a new version is created. If -F name is provided, but not found (and -o is not provided), the filename is treated as outfile, else the program exits with message "binfile -F not found. Check the filenames." 
 
-    build	-F -f -o -K -i -R -j 
-		imports binfiles ( -F ) and merges their data. All files must have the same K value. If -f name is provided, output is written in flat hash format. If the -f file exists, the program exits with message: "Flat Files can not be updated or merged". If -o is specified, and exists, a warning is printed : "Outfile is replaced, not updated !". If both -f and -o are provided, -f is written as flat file, and -o is written as binfile. By default, the data are saved in bin format as the first -F file. If the file exists, a new version is created. If -F name is provided, but not found (and -o is not provided), the filenameis treated as outfile, else the program exits with message "binfile -F not found. Check the filenames." Then, imports -i files and adds their data. Duplicate data are skipped automatically. fastq and fasta format are automatically detected. All files are analyzed independently. If "R1" exists in fastq file name, the reads are reverse-transcribed before analysis.
+    build	-F -f -o -K -i -R -j -t
+		imports binfiles ( -F ) and merges their data. All files must have the same K value. If -f name is provided, output is written in flat hash format. If the -f file exists, the program exits with message: "Flat Files can not be updated or merged". If -o is specified, and exists, a warning is printed : "Outfile is replaced, not updated !". If both -f and -o are provided, -f is written as flat file, and -o is written as binfile. By default, the data are saved in bin format as the first -F file. If the file exists, a new version is created. If -F name is provided, but not found (and -o is not provided), the filenameis treated as outfile, else the program exits with message "binfile -F not found. Check the filenames." 
+Then, imports -i files and adds their data. Duplicate data are skipped automatically. fastq and fasta format are automatically detected. All files are analyzed independently. If "R1" exists in fastq file name, the reads are reverse-transcribed before analysis.
 
-    refine	-F -f -o -i -j
+    refine	-F -f -o -i -j -t
 		imports binfiles ( -F ) and merges their data. All files must have the same K value. If -f name is provided, output is written in flat hash format. If the -f file exists, the program exits with message: "Flat Files can not be updated or merged". If -o is specified, and exists, a warning is printed : "Outfile is replaced, not updated !". If both -f and -o are provided, -f is written as flat file, and -o is written as binfile. By default, the data are saved in bin format as the first -F file. If the file exists, a new version is created. If -F name is provided, but not found (and -o is not provided), the filenameis treated as outfile, else the program exits with message "binfile -F not found. Check the filenames." Then, imports -i files and REMOVES their data from index table. fastq and fasta format are automatically detected. All files are analyzed independently. All reads are also reverse-transcribed before analysis. 
 
-    filter 	-F -f -L -p -m -s -D -d -R -j -O --stdin1 --stdin2 --stdout1 --stdout2 --printPositive
+    filter 	-F -f -L -p -m -s -D -d -R -j -t -O --stdin1 --stdin2 --stdout1 --stdout2 --printPositive
 		default behaviour (no command needed). Imports filter files ( -F or -f ). All files must have the same K value. Then, fastq files (-i) are analyzed incrementally. Readlimit (-L) can be used to analyze only a certain number of reads. By defaut, all reads are analyzed. Fastq files can be paired reads or single reads, this can be specified with parameter -p [1/2]. By default, paired reads are assumed. Reads shorter or equal to cutoff length -m are skipped (default 40). Strictness (-s) means how many hash matches triggers skipping (default 1). Setting -d disables automatic resetting of parameters -m and -s based on average read length of the first 100k reads. Output files' destination can be specified with -O. By default, output goes to the same folder as input. Output file names are automatically derived: ".Filtered" is added to the filename before the last "." . 
 
 Usage examples:
 
-    F64 build -K 25 -i org1.fasta STRAINS/*.fasta org1extra.fasta org1Mito.fasta org1_strainX_R1.fastq org1_strainX_R2.fastq -o Org1.25.bin 
-    F64 build -F Org1.25.bin -i more.fasta more2.fasta   // -> Org1.25.bin.v1
-    F64 build -F NegCont.25.bin -i NegCont_R1.fastq NegCont_R2.fastq -K 25
-    F64 merge -F Org1.25.bin.v1 NegCont.25.bin -o Exp1.25.bin -f Exp1.25.flat
-    F64 refine -F Exp1.25.bin -o Exp1.25.refined.bin -f Exp1.25.refined.flat -i bact1.fasta bact2.fasta metag_R1.fastq metag_R2.fastq
-    F64 -f Exp1.25.refined.flat -p 1 -i test1.fastq  // -> test1.filtered.fastq
-    F64 filter -f Exp1.25.refined.flat --stdin1 <(zcat R1.fq.gz) --stdin2 <(zcat R2.fq.gz) --stdout1 >(gzip > R1.filtered.fq.gz) --stdout2 >(gzip > R2.filtered.fq.gz) --json
-    F64 -f Exp1.25.refined.flat -p 2 -i Exp1/*.fastq
-    F64 -F Exp1.25.refined.bin SILVA138.25.bin -d -s 2 -m 55 -D 1 -i Exp1/*.fastq -O Result2/
+    F64 build -K 25 -i org1.fasta STRAINS/*.fasta org1extra.fasta org1Mito.fasta org1_strainX_R1.fastq org1_strainX_R2.fastq -o Org1.25.f64bin 
+    F64 build -F Org1.25.f64bin -i more.fasta more2.fasta   // -> Org1.25.f64bin.v1
+    F64 build -F NegCont.25.f64bin -i NegCont_R1.fastq NegCont_R2.fastq -K 25
+    F64 merge -F Org1.25.f64bin.v1 NegCont.25.f64bin -o Exp1.25.f64bin -f Exp1.25.f64flat
+    F64 refine -F Exp1.25.f64bin -o Exp1.25.refined.f64bin -f Exp1.25.refined.f64flat -i bact1.fasta bact2.fasta metag_R1.fastq metag_R2.fastq
+    F64 -f Exp1.25.refined.f64flat -p 1 -i test1.fastq  // -> test1.filtered.fastq
+    F64 filter -f Exp1.25.refined.f64flat --stdin1 <(zcat R1.fq.gz) --stdin2 <(zcat R2.fq.gz) --stdout1 >(gzip > R1.filtered.fq.gz) --stdout2 >(gzip > R2.filtered.fq.gz) --json
+    F64 -f Exp1.25.refined.f64flat -p 2 -i Exp1/*.fastq
+    F64 -F Exp1.25.refined.f64bin SILVA138.25.f64bin -d -s 2 -m 55 -D 1 -i Exp1/*.fastq -O Result2/
 
 
 System requirements
@@ -78,9 +84,9 @@ Dependencies:
 F64 has no dependencies. F64 is written in plain C. It needs to be compiled using gcc -std=gnu99 -pthread options. Low complexity regions are handled like everything else (no masking). 
 
 File formats:
-Filter files can be stored in two binary formats: bin and flat. Bin files can be merged and updated incrementally and converted to flat format. Flat files can not be updated or merged. Bin files must be entered as -F arguments (none to many), flat file must be entered as -f argument (none or one). Either -F or -f must be given. The formats are verified internally.
+Filter files can be stored in two binary formats: f64bin and f64flat. Bin files can be merged, refined and updated incrementally and converted to flat format. Flat files can not be updated or merged. Bin files must be entered as -F arguments (none to many), flat file must be entered as -f argument (none or one). Either -F or -f must be given. The formats are verified internally.
 For build, fasta and fastq files can be used, can be mixed. File type is detected automatically.
-For filtration, fasta and fastq files can be entered. Paired and single files can not be mixed. 
+For filtration, fasta and fastq files can be entered. Paired and single read files can not be mixed. 
 
 MacOS notice:
 F64 runs on MacOS and Linux. 
@@ -96,7 +102,7 @@ The program first loads the filter file(s) containing 64-bit hash values of the 
 
 Run optimization
 
-F64 is designed for fastq read filtration, for example removing human, or ribosomal, (or both) reads from metatranscriptome samples. Strictness 1 allows efficient removal of even slightly mutated target reads, however, some non-targeted reads are also removed. (less than 200reads / 10M,  in human - mouse mixture, k=25). Increasing kmer length or strictness reduces false positive rate, but increases sensitivity to mutations. When many files with different length reads are processed, it is advisable to allow ( no -d ) automatic read length detection, and strictness and cutoff optimization. Cutoff is set to 70% of the average read length of the first 100k reads, (min 40 max 70); strictness is calculated as s = (int)Avg.length / k / 2 (min 1). Processing files in batches is preferrable, because filterfile loading and conversion takes about 5 minutes (bin files) or 15 sec (flat files), while processing itself proceeds at 50 M reads/min (mixed orientation, 10% retainable reads) including file loading and N detection, or up to 70 M reads/min (sense orientation, 0.5% retainable reads). 
+F64 is designed for fastq read filtration, for example removing human, or ribosomal, (or both) reads from metatranscriptome samples. Strictness 1 allows efficient removal of even slightly mutated target reads. When many files with different length reads are processed, it is advisable to allow ( no -d ) automatic read length detection, and strictness and cutoff optimization. Cutoff is set to 70% of the average read length of the first 100k reads, (min 40 max 70); strictness is calculated as s = (int)Avg.length / k / 2 (min 1). Processing files in batches is preferrable, because filterfile loading and conversion takes about 5 minutes (bin files) or 15 sec (flat files), while processing itself proceeds at 60 M reads/min (mixed orientation, 10% retainable reads) including file loading and N detection, or up to 70 M reads/min (sense orientation, 0.5% retainable reads). 
 Many index binfiles can be loaded for one run, they are merged. (For example Human genome + SILVA + experiment-specific negative controls).
 For repeated routine use, the index files can be merged and saved in flat hash format. These load quicker, but can not be further updated or merged. 
 
@@ -119,9 +125,9 @@ By default, the program sets read length cutoff and strictness parameters based 
 Performance metrics:
 
 Speed
-Processing speed is 50 - 60 M reads/min, including file loading, reverse transcription, detection, N removal and output file writing. Index loading and conversion proceeds at 7 GB/min (bin files) or 2 GB/sec (flat files). For filtering  simulated datasets containing 10M human genomic reads and 1M E.coli reads, speed gains of 16x and 43x were observed, compared to Kraken2 and BWA-mem, respectively, not accounting for hands-on time. 
+Processing speed is 50 - 100 M reads/min, including file loading, reverse transcription, detection, N removal and output file writing. Index loading and conversion proceeds at 7 GB/min (bin files) or 2 GB/sec (flat files). 
 
 Accuracy
-For unmutated test reads, the program displays Sensitivity = 1, which means every single targeted read is removed. Mutation burden prevents complete removal. If a read can not be identified, it is left untouched. Specificity, or retention of non-targeted reads, depends on the kmer length and strictness parameters. For distantly related organisms, such as H.sapiens - E.coli mixture, sensitivity and specificity are 1. (Kraken2: Sensitivity = 0.984011, Specificity = 0.999977; BWA-mem : Sensitivity = 0.9935316, Specificity = 0.99996) For Human -  Mouse genomic mixture, sensitivity is between 0.997-0.999, spcificity is between 0.99998 and 1 .  Increasing k and s will improve specificity, but increase retention of mutated targeted reads. The high accuracy is achieved by our unique library refinement function.
+For unmutated test reads, the program displays Sensitivity = 1, which means every single targeted read is removed. Mutation burden prevents complete removal. If a read can not be identified, it is left untouched. Specificity, or retention of non-targeted reads, depends on the kmer length and strictness parameters. For distantly related organisms, such as H.sapiens - E.coli mixture, sensitivity and specificity are 1. For Human -  Mouse genomic mixture, sensitivity is between 0.997-0.999, spcificity is between 0.99998 and 1 .  Increasing k and s will improve specificity, but increase retention of mutated targeted reads. The high accuracy is achieved by our unique library refinement function.
 
 
