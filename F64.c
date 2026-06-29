@@ -304,7 +304,7 @@ char* revTrans(char* seq) {
                 break;
             }
         }
-        rt[seq_len - 1 - i] = (j == 4) ? r : PT[3 - j];
+        rt[seq_len - 1 - i] = (j >= 4) ? r : PT[3 - j]; // j==5: base not in ACGTN (N/IUPAC/other) -> keep unchanged (was OOB PT[3-5])
     }
     rt[seq_len] = '\0';
     return rt;
@@ -538,7 +538,7 @@ void readFlatfile (char* file){
 
     void convert_to_FlatHash(){
         time_t now = time(NULL);
-        offsets = malloc( osSize * sizeof(uint32_t));
+        offsets = malloc( (osSize + 1) * sizeof(uint32_t)); // +1: offsets[osSize] is written below
         //if(offsets) {fprintf(stderr,"Offsets allocated: %llu \n",osSize); }
         //else {fprintf(stderr,"Offsets allocation error: \n"); exit(1);}
         // First pass: compute total size
